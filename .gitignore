@@ -1,3 +1,8 @@
 *.db
+main
 shrtn
+.pre-commit-config.yaml
+
 tmp/
+result/
+vendor/

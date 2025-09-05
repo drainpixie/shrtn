@@ -1,4 +1,3 @@
-// go build -ldflags "-s -w -X main.version=$(git describe --tags --always)"
 package main
 
 import (
