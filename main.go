@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -8,11 +9,16 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
-	host string
-	port string
+	db *sql.DB
+
+	host     string
+	port     string
+	database string
 )
 
 func getEnv(key, fallback string) string {
@@ -23,12 +29,24 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func setupEnvironment() {
+func setup() {
 	host = getEnv("HOST", "http://localhost")
 	port = getEnv("PORT", "3002")
+	database = getEnv("DATABASE", "./shrtn.db")
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	var err error
+
+	db, err = sql.Open("sqlite3", database)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to open database")
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal().Err(err).Msg("failed to connect to database")
+	}
 }
 
 func handleGET(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +100,7 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	setupEnvironment()
+	setup()
 
 	addr := fmt.Sprintf(":%s", port)
 	http.HandleFunc("/", requestHandler)

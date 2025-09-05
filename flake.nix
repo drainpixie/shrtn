@@ -9,7 +9,7 @@
     pkgs = nixpkgs.legacyPackages.${system};
   in {
     devShells.${system}.default = pkgs.mkShell {
-      buildInputs = [pkgs.go pkgs.air];
+      buildInputs = [pkgs.go pkgs.air pkgs.sqlite];
     };
   };
 }
