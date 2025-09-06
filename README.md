@@ -30,18 +30,29 @@ nix
 }
 ```
 
-## cli
+## usage
 
-- [timeline](./systems/timeline) dell latitude 5490
-- [incubator](./systems/incubator) netcup 500 g11s
+```
+$ PORT=3005 shrtn
+11:39AM INF server running addr=http://localhost:3005
+11:39AM INF incoming request method=GET path=/
 
-## install
+$ curl http://localhost:3005
+shrtn @ http://localhost:3005
+=============================
+a small url shortener
 
-## layout
+get      /         index        ex: this website
+get      /<id>     redirect     ex: https://google.com
+post     /<url>    shorten url  ex: <id>
 
-- `lib/` -> custom functions
-- `pkgs/` -> custom derivations
-- `overlays/` -> custom overlays
-- `secrets/` -> secrets managed via `agenix`
-- `systems/<hostname>` -> system-specific configuration
-- `modules/` -> mixed `NixOS` and `home-manager` modules
+links    5
+clicks   8
+version  dev
+
+$ shrtn get <id>
+$ shrtn key <token>
+$ shrtn all
+$ shrtn del <id>
+$ shrtn shorten <url>
+```
