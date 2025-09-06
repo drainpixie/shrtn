@@ -82,6 +82,62 @@
       };
     });
 
+    nixosModules.shrtn = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
+      cfg = config.services.shrtn;
+    in {
+      options.services.shrtn = {
+        enable = lib.mkEnableOption "shrtn";
+
+        host = lib.mkOption {
+          type = lib.types.str;
+          default = "127.0.0.1";
+          description = "Host shrtn listens on";
+        };
+
+        port = lib.mkOption {
+          type = lib.types.int;
+          default = 3000;
+          description = "Port shrtn listens on";
+        };
+
+        database = lib.mkOption {
+          type = lib.types.str;
+          default = "/var/lib/shrtn/shrtn.db";
+          description = "Path to the SQLite database file";
+        };
+      };
+
+      config = lib.mkIf cfg.enable {
+        systemd.services.shrtn = {
+          description = "shrtn";
+          after = ["network.target"];
+          wantedBy = ["multi-user.target"];
+
+          serviceConfig = {
+            ExecStart = "${pkgs.shrtn}/bin/shrtn";
+            Restart = "always";
+            DynamicUser = true;
+            StateDirectory = "shrtn";
+
+            Environment = [
+              "HOST=${cfg.host}"
+              "PORT=${cfg.port}"
+              "DATABASE=${cfg.database}"
+            ];
+          };
+        };
+      };
+    };
+
+    overlays.default = final: prev: {
+      shrtn = self.packages.${prev.system}.default;
+    };
+
     formatter = forAllSystems (
       system:
         nixpkgs.legacyPackages.${system}.alejandra
