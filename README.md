@@ -13,7 +13,7 @@ nix
 
 ```nix
 {
-  inputs.shrtn.url = "github:yourname/shrtn";
+  inputs.shrtn.url = "github:drainpixie/shrtn";
 
   outputs = { self, nixpkgs, shrtn, ... }: {
     nixosConfigurations.host = nixpkgs.lib.nixosSystem {
