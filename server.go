@@ -2,9 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/rs/zerolog"

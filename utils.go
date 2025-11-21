@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
+	"net/http"
 	"os"
 )
 
@@ -40,4 +42,30 @@ func generateID(length int) string {
 	}
 
 	return base64.RawURLEncoding.EncodeToString(bytes)[:length]
+}
+
+func jsonOk(w http.ResponseWriter, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+func jsonCreated(w http.ResponseWriter, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+func jsonError(w http.ResponseWriter, status int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"error": message,
+	})
+}
+
+func jsonMessage(w http.ResponseWriter, message string) {
+	jsonOk(w, map[string]string{
+		"message": message,
+	})
 }
