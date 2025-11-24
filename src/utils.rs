@@ -3,7 +3,7 @@ use rand::{Rng, distr::Alphanumeric, rng};
 use serde::Serialize;
 use thiserror::Error;
 
-pub fn generate_short_code(len: usize) -> String {
+pub fn random_alphanumeric(len: usize) -> String {
 	rng().sample_iter(&Alphanumeric).take(len).map(char::from).collect()
 }
 
