@@ -8,7 +8,7 @@ pub struct Url {
 	pub short: String,
 	pub target: String,
 	pub created_at: String,
-	pub delete_token: String,
+	pub token: String,
 }
 
 pub async fn initialise_database(pool: &SqlitePool) -> Result<(), sqlx::Error> {
@@ -20,7 +20,7 @@ pub async fn initialise_database(pool: &SqlitePool) -> Result<(), sqlx::Error> {
     short TEXT NOT NULL UNIQUE,
     target TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    delete_token TEXT NOT NULL
+    token TEXT NOT NULL
     );
     "#,
 	)

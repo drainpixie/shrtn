@@ -13,9 +13,11 @@ impl UrlService {
 	}
 
 	pub async fn list(&self) -> Result<Vec<Url>, sqlx::Error> {
-		sqlx::query_as::<_, Url>("SELECT id, short, target FROM urls")
-			.fetch_all(&self.pool)
-			.await
+		sqlx::query_as::<_, Url>(
+			"SELECT id, clicks, short, target, created_at, token FROM urls",
+		)
+		.fetch_all(&self.pool)
+		.await
 	}
 
 	pub async fn exists(&self, short: &str) -> Result<bool, sqlx::Error> {
@@ -30,7 +32,7 @@ impl UrlService {
 
 	pub async fn get(&self, short: &str) -> Result<Option<Url>, sqlx::Error> {
 		let url: Option<Url> = sqlx::query_as(
-			"SELECT id, short, target FROM urls WHERE short = ?",
+			"SELECT id, clicks, short, target, created_at, token FROM urls WHERE short = ?",
 		)
 		.bind(short)
 		.fetch_optional(&self.pool)
@@ -43,10 +45,12 @@ impl UrlService {
 		&self,
 		short: &str,
 		target: &str,
+		token: &str,
 	) -> Result<(), sqlx::Error> {
-		sqlx::query("INSERT INTO urls (short, target) VALUES (?, ?)")
+		sqlx::query("INSERT INTO urls (short, target, token) VALUES (?, ?, ?)")
 			.bind(short)
 			.bind(target)
+			.bind(token)
 			.execute(&self.pool)
 			.await?;
 
