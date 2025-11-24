@@ -28,6 +28,17 @@ impl UrlService {
 		Ok(exists.is_some())
 	}
 
+	pub async fn get(&self, short: &str) -> Result<Option<Url>, sqlx::Error> {
+		let url: Option<Url> = sqlx::query_as(
+			"SELECT id, short, target FROM urls WHERE short = ?",
+		)
+		.bind(short)
+		.fetch_optional(&self.pool)
+		.await?;
+
+		Ok(url)
+	}
+
 	pub async fn add(
 		&self,
 		short: &str,
