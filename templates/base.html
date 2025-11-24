@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock %}</title>
+
+  <meta charset="utf-8" />
+  <link rel="icon" href="data:image/svg+xml,
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+    <text x='50' y='50' font-size='70' text-anchor='middle' dominant-baseline='central'>🔗</text>
+  </svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.com">
+  <link rel="stylesheet" href="https://unpkg.com/@csstools/normalize.css" />
+
+  <style>
+    @font-face {
+      font-family: 'iA Writer Mono';
+      font-style: normal;
+      font-display: swap;
+      font-weight: 400;
+      src:
+        url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff2) format('woff2'),
+        url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff) format('woff');
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'iA Writer Mono', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 100vh;
+      padding: 2rem;
+
+      background: #fafafa;
+      color: #1a1a1a;
+
+      font-size: .9rem;
+      line-height: 1.6;
+    }
+
+    body > * {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+
+    h1 + p {
+      margin-top: 0;
+      font-size: .85rem;
+      color: #666;
+    }
+
+    input, button {
+      font-family: inherit;
+      font-size: .85rem;
+      padding: .5rem .8rem;
+      border-radius: 6px;
+      outline: none;
+      transition: all .2s ease;
+    }
+
+    input {
+      border: 1px solid #d4d4d4;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: #666;
+      box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+    }
+
+    input:hover {
+      border-color: #999;
+    }
+
+    button {
+      border: 1px solid #1a1a1a;
+      background: #1a1a1a;
+      color: #fafafa;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
+      border-color: #333;
+    }
+
+    footer {
+      padding-top: 1rem;
+      border-top: 1px solid #e5e5e5;
+      font-size: .8rem;
+      color: #666;
+      text-align: center;
+    }
+
+    footer a {
+      color: inherit;
+      text-decor400on: none;
+      transition: color .2s ease;
+    }
+
+    footer a:hover {
+      color: #1a1a1a;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1.5rem 1rem; }
+      h1 { font-size: 1.2rem; }
+    }
+  </style>
+
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  <h1>{% block title %}{% endblock %}</h1>
+
+  {% block body %}{% endblock %}
+
+  <footer>
+    <a href="/">home</a> |
+    <a href="/dashboard">dash</a> |
+    <a href="https://github.com/drainpixie/shrtn">code</a>
+  </footer>
+</body>
+</html>

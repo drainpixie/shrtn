@@ -1,0 +1,28 @@
+[package]
+name = "shrtn"
+license = "MIT"
+version = "0.1.0"
+edition = "2024"
+description = "a little url shortener"
+readme = "README.md"
+repository = "https://github.com/drainpixie/shrtn"
+
+[build-dependencies]
+
+[dependencies]
+tokio = { version = "1.48.0", features = ["full"] }
+
+actix-web = "4.12.0"
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-native-tls", "macros"] }
+
+rand = "0.9.2"
+log = "0.4.28"
+dotenvy = "0.15.7"
+env_logger = "0.11.8"
+serde_json = "1.0.145"
+serde = { version = "1.0.228", features = ["derive"] }
+askama = "0.14.0"
+askama_web = { version = "0.14.6", features = ["actix-web-4"] }
+url = "2.5.7"
+thiserror = "2.0.17"
+

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}shrtn{% endblock %}
+
+{% block head %}
+<style>
+  #inputs {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    width: 100%;
+  }
+
+  #output {
+    margin-top: 1rem;
+    display: flex;
+    items-align: center;
+    justify-content: center;
+  }
+
+  button[disabled] {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const submit = document.getElementById('submit');
+    const output = document.getElementById('output');
+    const targetInput = document.getElementById('target');
+    const shortInput = document.getElementById('short');
+
+    submit.addEventListener('click', async () => {
+      const raw = targetInput.value.trim();
+
+      if (!raw) {
+        output.textContent = "please provide an url to shorten.";
+        return;
+      }
+
+      const normalised = normaliseURL(raw);
+      if (!normalised) {
+        output.textContent = "please provide a valid url.";
+        return;
+      }
+
+      submit.disabled = true;
+      output.textContent = "shortening… ꩜";
+
+      const { success, message, data } = await shorten(normalised, shortInput.value.trim());
+
+      if (!success) output.textContent = message ?? "something went wrong.";
+      else {
+        const url = `${window.location.origin}/${data.short}`;
+        output.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+      }
+
+      submit.disabled = false;
+    });
+
+    function normaliseURL(input) {
+      try {
+        const parsed = new URL(input.trim());
+        return parsed.toString();
+      } catch {
+        return null;
+      }
+    }  
+});
+
+  async function shorten(target, short) {
+    const response = await fetch('/api/urls', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, short }),
+    });
+
+    return response.json().catch(() => ({}));
+  }
+</script>
+{% endblock %}
+
+{% block body %}
+  <p>a minimal url shortener.</p>
+
+  <section id="inputs">
+    <input id="target" type="text" placeholder="url" required />
+    <input id="short" type="text" placeholder="slug (optional)" />
+    <button type="button" id="submit">shorten</button>
+  </section>
+
+  <p id="output">nothing has been shortened yet.</p>
+{% endblock %}

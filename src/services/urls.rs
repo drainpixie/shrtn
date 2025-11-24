@@ -1,0 +1,44 @@
+use sqlx::SqlitePool;
+
+use crate::database::Url;
+
+#[derive(Clone)]
+pub struct UrlService {
+	pub pool: SqlitePool,
+}
+
+impl UrlService {
+	pub fn new(pool: SqlitePool) -> Self {
+		Self { pool }
+	}
+
+	pub async fn list(&self) -> Result<Vec<Url>, sqlx::Error> {
+		sqlx::query_as::<_, Url>("SELECT id, short, target FROM urls")
+			.fetch_all(&self.pool)
+			.await
+	}
+
+	pub async fn exists(&self, short: &str) -> Result<bool, sqlx::Error> {
+		let exists: Option<(i64,)> =
+			sqlx::query_as("SELECT 1 FROM urls WHERE short = ? LIMIT 1")
+				.bind(short)
+				.fetch_optional(&self.pool)
+				.await?;
+
+		Ok(exists.is_some())
+	}
+
+	pub async fn add(
+		&self,
+		short: &str,
+		target: &str,
+	) -> Result<(), sqlx::Error> {
+		sqlx::query("INSERT INTO urls (short, target) VALUES (?, ?)")
+			.bind(short)
+			.bind(target)
+			.execute(&self.pool)
+			.await?;
+
+		Ok(())
+	}
+}
