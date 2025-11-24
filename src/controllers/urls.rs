@@ -39,7 +39,7 @@ pub async fn add(
 		data.short.clone()
 	};
 
-	Url::parse(&data.target).map_err(|_| APIError::InvalidUrl)?;
+	Url::parse(&data.target).map_err(|_| APIError::InvalidURL)?;
 	info!("adding new url short={}, target={}", short, data.target);
 
 	let exists = service.exists(&short).await.map_err(|e| {

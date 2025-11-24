@@ -17,7 +17,7 @@ pub struct APIResponse<T> {
 #[derive(Error, Debug)]
 pub enum APIError {
 	#[error("invalid target url")]
-	InvalidUrl,
+	InvalidURL,
 
 	#[error("short code already exists")]
 	AlreadyExists,
@@ -37,7 +37,7 @@ pub type APIResult<T = HttpResponse> = Result<T, APIError>;
 impl ResponseError for APIError {
 	fn status_code(&self) -> StatusCode {
 		match self {
-			Self::InvalidUrl => StatusCode::BAD_REQUEST,
+			Self::InvalidURL => StatusCode::BAD_REQUEST,
 			Self::AlreadyExists => StatusCode::CONFLICT,
 			Self::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
 			Self::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
@@ -47,7 +47,7 @@ impl ResponseError for APIError {
 
 	fn error_response(&self) -> HttpResponse {
 		let message = Some(match self {
-			Self::InvalidUrl => "invalid target URL",
+			Self::InvalidURL => "invalid target URL",
 			Self::AlreadyExists => "short code already exists",
 			Self::SqlxError(_) => "database error",
 			Self::DatabaseError(_) => "database error",
