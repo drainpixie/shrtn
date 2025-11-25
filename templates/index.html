@@ -12,10 +12,29 @@
   }
 
   #output {
-    margin-top: 1rem;
     display: flex;
     items-align: center;
+    flex-direction: column;
     justify-content: center;
+  }
+
+  #output * {
+    text-align: center;
+  }
+
+  #output > *:only-child {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+  }
+
+  #output > *:first-child:not(:only-child) {
+    margin-top: .5rem;
+    margin-bottom: 0;
+  }
+
+  #output > *:last-child:not(:only-child) {
+    margin-top: 0;
+    margin-bottom: .5rem;
   }
 
   button[disabled] {
@@ -35,25 +54,25 @@
       const raw = targetInput.value.trim();
 
       if (!raw) {
-        output.textContent = "please provide an url to shorten.";
+        output.innerHTML = "<p>please provide an url to shorten.</p>"
         return;
       }
 
       const normalised = normaliseURL(raw);
       if (!normalised) {
-        output.textContent = "please provide a valid url.";
+        output.innerHTML = "<p>please provide a valid url.</p>"
         return;
       }
 
       submit.disabled = true;
-      output.textContent = "shortening… ꩜";
+      output.innerHTML = "<p>shortening… ꩜</p>";
 
       const { success, message, data } = await shorten(normalised, shortInput.value.trim());
 
-      if (!success) output.textContent = message ?? "something went wrong.";
+      if (!success) output.innerHTML = `<p>${message ?? "something went wrong."}</p>`;
       else {
         const url = `${window.location.origin}/${data.short}`;
-        output.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+        output.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a><p>${data.token}</>`;
       }
 
       submit.disabled = false;
@@ -90,5 +109,5 @@
     <button type="button" id="submit">shorten</button>
   </section>
 
-  <p id="output">nothing has been shortened yet.</p>
+  <div id="output"><p>nothing has been shortened yet.</p></div>
 {% endblock %}

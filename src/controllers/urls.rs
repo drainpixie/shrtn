@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::{
 	services::urls::UrlService,
-	utils::{APIError, APIResponse, APIResult, generate_short_code},
+	utils::{APIError, APIResponse, APIResult, random_alphanumeric},
 };
 
 #[derive(Deserialize)]
@@ -34,13 +34,13 @@ pub async fn add(
 	data: web::Json<AddRequest>,
 ) -> APIResult {
 	let short = if data.short.is_empty() {
-		generate_short_code(6)
+		random_alphanumeric(6)
 	} else {
 		data.short.clone()
 	};
 
 	Url::parse(&data.target).map_err(|_| APIError::InvalidURL)?;
-	info!("adding new url short={}, target={}", short, data.target);
+	info!("adding new url short={} target={}", short, data.target);
 
 	let exists = service.exists(&short).await.map_err(|e| {
 		error!("failed to check if short exists: {:?}", e);
@@ -51,7 +51,9 @@ pub async fn add(
 		return Err(APIError::AlreadyExists);
 	}
 
-	service.add(&short, &data.target).await.map_err(|e| {
+	let token = random_alphanumeric(32);
+
+	service.add(&short, &data.target, &token).await.map_err(|e| {
 		error!("db insert error {}", e);
 		APIError::DatabaseError("failed to insert".to_string())
 	})?;
@@ -59,8 +61,9 @@ pub async fn add(
 	Ok(HttpResponse::Ok().json(APIResponse {
 		success: true,
 		data: Some(serde_json::json!({
-			"short": short,
-			"target": data.target,
+		"short": short,
+		"target": data.target,
+		"token": token,
 		})),
 		message: None,
 	}))
