@@ -1,4 +1,4 @@
-use actix_web::{HttpResponse, get, post, web};
+use actix_web::{HttpResponse, delete, get, post, web};
 use log::{error, info};
 use serde::Deserialize;
 use url::Url;
@@ -69,6 +69,36 @@ pub async fn add(
 	}))
 }
 
+#[delete("/{slug}")]
+pub async fn delete(
+	service: web::Data<UrlService>,
+	slug: web::Path<String>,
+	token: web::Query<std::collections::HashMap<String, String>>,
+) -> APIResult {
+	let slug = slug.into_inner();
+	let token = match token.get("token") {
+		Some(t) => t,
+		None => return Err(APIError::Unauthorized),
+	};
+
+	let deleted = service.delete(&slug, token).await.map_err(|e| {
+		error!("db delete error {}", e);
+		APIError::DatabaseError("failed to delete".to_string())
+	})?;
+
+	if !deleted {
+		return Err(APIError::NotFound);
+	}
+
+	Ok(HttpResponse::Ok().json(APIResponse::<()> {
+		success: true,
+		data: None,
+		message: Some("url deleted successfully".to_string()),
+	}))
+}
+
 pub fn configure(cfg: &mut web::ServiceConfig) {
-	cfg.service(web::scope("/api/urls").service(list).service(add));
+	cfg.service(
+		web::scope("/api/urls").service(delete).service(list).service(add),
+	);
 }

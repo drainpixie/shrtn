@@ -50,6 +50,21 @@ impl UrlService {
 		Ok(())
 	}
 
+	pub async fn delete(
+		&self,
+		short: &str,
+		token: &str,
+	) -> Result<bool, sqlx::Error> {
+		let result =
+			sqlx::query("DELETE FROM urls WHERE short = ? AND token = ?")
+				.bind(short)
+				.bind(token)
+				.execute(&self.pool)
+				.await?;
+
+		Ok(result.rows_affected() > 0)
+	}
+
 	pub async fn add(
 		&self,
 		short: &str,
