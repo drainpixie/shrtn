@@ -22,6 +22,12 @@ pub enum APIError {
 	#[error("short code already exists")]
 	AlreadyExists,
 
+	#[error("not found")]
+	NotFound,
+
+	#[error("unauthorized")]
+	Unauthorized,
+
 	#[error("database error {0}")]
 	DatabaseError(String),
 
@@ -37,27 +43,13 @@ pub type APIResult<T = HttpResponse> = Result<T, APIError>;
 impl ResponseError for APIError {
 	fn status_code(&self) -> StatusCode {
 		match self {
+			Self::NotFound => StatusCode::NOT_FOUND,
 			Self::InvalidURL => StatusCode::BAD_REQUEST,
 			Self::AlreadyExists => StatusCode::CONFLICT,
+			Self::Unauthorized => StatusCode::UNAUTHORIZED,
 			Self::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
 			Self::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
 			Self::TemplateError(_) => StatusCode::INTERNAL_SERVER_ERROR,
 		}
-	}
-
-	fn error_response(&self) -> HttpResponse {
-		let message = Some(match self {
-			Self::InvalidURL => "invalid target URL",
-			Self::AlreadyExists => "short code already exists",
-			Self::SqlxError(_) => "database error",
-			Self::DatabaseError(_) => "database error",
-			Self::TemplateError(_) => "template rendering error",
-		});
-
-		HttpResponse::build(self.status_code()).json(APIResponse::<()> {
-			success: false,
-			data: None,
-			message: message.map(String::from),
-		})
 	}
 }
