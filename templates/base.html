@@ -1,146 +1,162 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <title>{% block title %}{% endblock %}</title>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
 
-  <meta charset="utf-8" />
-  <link rel="icon" href="data:image/svg+xml,
+    <meta charset="utf-8" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,
   <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
     <text x='50' y='50' font-size='70' text-anchor='middle' dominant-baseline='central'>🔗</text>
-  </svg>" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </svg>"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="preconnect" href="https://unpkg.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.com">
-  <link rel="stylesheet" href="https://unpkg.com/@csstools/normalize.css" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.com" />
+    <link rel="stylesheet" href="https://unpkg.com/@csstools/normalize.css" />
 
-  <style>
-    :root {
-      --bg: #fff;
-      --fg: #000;
-    }
+    <style>
+      :root {
+        --bg: #fff;
+        --fg: #000;
+        --radius: 6px;
+        --font-size-base: 0.9rem;
+        --font-size-small: 0.85rem;
+        --line-height: 1.6;
+        --max-width: 400px;
+      }
 
-    @font-face {
-      font-family: 'iA Writer Mono';
-      font-style: normal;
-      font-display: swap;
-      font-weight: 400;
-      src:
-        url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff2) format('woff2'),
-        url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff) format('woff');
-    }
+      @font-face {
+        font-family: "iA Writer Mono";
+        font-style: normal;
+        font-display: swap;
+        font-weight: 400;
+        src:
+          url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff2)
+            format("woff2"),
+          url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff)
+            format("woff");
+      }
 
-    * {
-      box-sizing: border-box;
-    }
+      :where(*) {
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: 'iA Writer Mono', monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      body {
+        font-family: "iA Writer Mono", monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-      min-height: 100vh;
-      padding: 2rem;
-      margin: 0;
+        min-height: 100vh;
+        padding: 2rem;
+        margin: 0;
 
-      background: var(--bg);
-      color: var(--fg);
+        background: var(--bg);
+        color: var(--fg);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height);
 
-      font-size: .9rem;
-      line-height: 1.6;
-    }
+        > * {
+          width: 100%;
+          max-width: var(--max-width);
+        }
+      }
 
-    body > * {
-      width: 100%;
-      max-width: 400px;
-    }
+      h1 {
+        font-size: 1.4rem;
+        font-weight: 400;
+        margin-bottom: 0rem;
 
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
-    }
+        + p {
+          font-size: var(--font-size-small);
+          color: var(--fg);
+          margin-top: 0;
+        }
+      }
 
-    h1 + p {
-      font-size: .85rem;
-      color: var(--fg);
-    }
+      input,
+      button {
+        font-family: inherit;
+        font-size: var(--font-size-small);
+        padding: 0.5rem 0.8rem;
+        border-radius: var(--radius);
+        outline: none;
+        transition: all 0.2s ease;
 
-    input, button {
-      font-family: inherit;
-      font-size: .85rem;
-      padding: .5rem .8rem;
-      border-radius: 6px;
-      outline: none;
-      transition: all .2s ease;
-      color: var(--fg);
-    }
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+        }
 
-    input {
-      border: 1px solid var(--fg);
-      background: #fff;
-    }
+        &:hover {
+          border-color: var(--fg);
+        }
+      }
 
-    input:focus {
-      border-color: var(--fg);
-      box-shadow: 0 0 0 3px rgba(0,0,0,.2);
-    }
+      input {
+        border: 1px solid var(--fg);
+        background: var(--bg);
+      }
 
-    input:hover {
-      border-color: var(--fg);
-    }
+      button {
+        border: 1px solid var(--fg);
+        background: var(--fg);
+        color: var(--bg);
+        cursor: pointer;
 
-    button {
-      border: 1px solid var(--fg);
-      background: var(--fg);
-      color: var(--bg);
-      cursor: pointer;
-    }
+        &:hover {
+          background: var(--fg);
+        }
 
-    button:hover {
-      background: var(--fg);
-      border-color: var(--fg);
-    }
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
 
-    footer {
-      padding-top: 1rem;
-      border-top: 1px solid var(--fg);
-      font-size: .8rem;
-      color: var(--fg);
-      text-align: center;
-    }
+      footer {
+        padding-top: 1rem;
+        border-top: 1px solid var(--fg);
+        font-size: 0.8rem;
+        color: var(--fg);
+        text-align: center;
 
-    footer a {
-      color: inherit;
-      text-decoration: none;
-      transition: opacity .2s ease;
-    }
+        a {
+          color: inherit;
+          text-decoration: none;
+          transition: opacity 0.2s ease;
 
-    footer a:hover {
-      opacity: .6;
-    }
+          &:hover {
+            opacity: 0.6;
+          }
+        }
+      }
 
-    @media (max-width: 600px) {
-      body { padding: 1.5rem 1rem; }
-      h1 { font-size: 1.2rem; }
-    }
-  </style>
+      @media (max-width: 600px) {
+        body {
+          padding: 1.5rem 1rem;
+        }
 
-  {% block head %}{% endblock %}
-</head>
+        h1 {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
 
-<body>
-  <h1>{% block title %}{% endblock %}</h1>
+    {% block head %}{% endblock %}
+  </head>
 
-  {% block body %}{% endblock %}
+  <body>
+    <h1>{% block title %}{% endblock %}</h1>
 
-  <footer>
-    <a href="/">home</a> |
-    <a href="/dashboard">dash</a> |
-    <a href="https://github.com/drainpixie/shrtn">code</a>
-  </footer>
-</body>
+    {% block body %}{% endblock %}
+
+    <footer>
+      <a href="/">home</a> | <a href="/dashboard">dash</a> |
+      <a href="https://github.com/drainpixie/shrtn">code</a>
+    </footer>
+  </body>
 </html>
