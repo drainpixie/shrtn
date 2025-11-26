@@ -7,9 +7,22 @@ use crate::{services::urls::UrlService, utils::APIResult};
 #[template(path = "index.html")]
 struct IndexTemplate;
 
+#[derive(Template)]
+#[template(path = "404.html")]
+struct NotFoundTemplate;
+
+#[derive(Template)]
+#[template(path = "info.html")]
+struct InfoTemplate;
+
 fn render_template<T: Template>(template: &T) -> APIResult {
 	let html = template.render()?;
 	Ok(HttpResponse::Ok().content_type("text/html").body(html))
+}
+
+#[get("/info")]
+pub async fn info() -> APIResult {
+	render_template(&InfoTemplate {})
 }
 
 #[get("/{slug:.*}")]
@@ -26,10 +39,10 @@ pub async fn index(
 		Some(url) => Ok(HttpResponse::Found()
 			.append_header(("Location", url.target))
 			.finish()),
-		None => Ok(HttpResponse::NotFound().body("404 Not Found")),
+		None => render_template(&NotFoundTemplate {}),
 	}
 }
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
-	cfg.service(index);
+	cfg.service(info).service(index);
 }
