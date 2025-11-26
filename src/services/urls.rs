@@ -41,6 +41,15 @@ impl UrlService {
 		Ok(url)
 	}
 
+	pub async fn click(&self, short: &str) -> Result<(), sqlx::Error> {
+		sqlx::query("UPDATE urls SET clicks = clicks + 1 WHERE short = ?")
+			.bind(short)
+			.execute(&self.pool)
+			.await?;
+
+		Ok(())
+	}
+
 	pub async fn add(
 		&self,
 		short: &str,

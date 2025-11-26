@@ -28,17 +28,21 @@ pub async fn info() -> APIResult {
 #[get("/{slug:.*}")]
 pub async fn index(
 	slug: web::Path<String>,
-	url: web::Data<UrlService>,
+	service: web::Data<UrlService>,
 ) -> APIResult {
 	let slug = slug.into_inner();
 	if slug.is_empty() {
 		return render_template(&IndexTemplate {});
 	}
 
-	match url.get(&slug).await? {
-		Some(url) => Ok(HttpResponse::Found()
-			.append_header(("Location", url.target))
-			.finish()),
+	match service.get(&slug).await? {
+		Some(url) => {
+			service.click(&slug).await?;
+
+			Ok(HttpResponse::Found()
+				.append_header(("Location", url.target))
+				.finish())
+		}
 		None => render_template(&NotFoundTemplate {}),
 	}
 }
