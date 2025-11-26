@@ -1,9 +1,157 @@
-{% extends "base.html" %} {% block title %}shrtn{% endblock %} {% block head %}
-<style></style>
+{% extends "base.html" %} {% block title %}shrtn::info{% endblock %} {% block
+head %}
+<style>
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 400;
+    margin: 0.5rem 0 0.3rem 0;
+  }
 
-<script></script>
+  p {
+    margin: 0.3rem 0;
+    font-size: var(--font-size-small);
+  }
+
+  code {
+    font-family: inherit;
+    font-size: var(--font-size-base);
+  }
+
+  .endpoint {
+    margin: 0.5rem 0;
+
+    &:first-child {
+      margin-top: 0.5rem;
+      margin-bottom: 0;
+    }
+
+    &:last-child {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .endpoint-header {
+    margin-bottom: 0.3rem;
+  }
+
+  .method {
+    display: inline-block;
+    padding: 0 0.3rem;
+    font-size: var(--font-size-small);
+    font-weight: 400;
+    border: 1px solid var(--fg);
+    border-radius: var(--radius);
+  }
+
+  .params {
+    margin: 0.3rem 0;
+    padding-left: 1rem;
+    font-size: var(--font-size-small);
+  }
+
+  .param {
+    margin: 0.3rem 0;
+  }
+
+  .param-name {
+    font-weight: 400;
+  }
+
+  .param-type {
+    opacity: 0.6;
+    font-style: italic;
+  }
+</style>
 {% endblock %} {% block body %}
-<p>some info about shrtn.</p>
+<p>some info about the shrtn api.</p>
 
-<h2>api</h2>
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method">GET</span>
+    <code>/api/urls</code>
+  </div>
+  <p>list all shortened urls in the system.</p>
+
+  <h3>response</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">success</span>
+      <span class="param-type">boolean</span>
+    </li>
+    <li class="param">
+      <span class="param-name">data</span>
+      <span class="param-type">array</span> list of url objects
+    </li>
+  </ul>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method">POST</span>
+    <code>/api/urls</code>
+  </div>
+  <p>shortens an url.</p>
+
+  <h3>body</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">short</span>
+      <span class="param-type">&lt;string&gt;</span> custom short code
+    </li>
+    <li class="param">
+      <span class="param-name">target</span>
+      <span class="param-type">[string]</span> url to redirect to
+    </li>
+  </ul>
+
+  <h3>response</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">success</span>
+      <span class="param-type">boolean</span>
+    </li>
+    <li class="param">
+      <span class="param-name">data</span>
+      <span class="param-type">object</span> contains short, target, and token
+    </li>
+  </ul>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method">DELETE</span>
+    <code>/api/urls/{slug}</code>
+  </div>
+  <p>delete an url.</p>
+
+  <h3>parameters</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">slug</span>
+      <span class="param-type">[string]</span> the short code to delete
+    </li>
+  </ul>
+
+  <h3>query</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">token</span>
+      <span class="param-type">[string]</span> authentication token
+    </li>
+  </ul>
+
+  <h3>response</h3>
+  <ul class="params">
+    <li class="param">
+      <span class="param-name">success</span>
+      <span class="param-type">boolean</span>
+    </li>
+    <li class="param">
+      <span class="param-name">message</span>
+      <span class="param-type">string</span>
+    </li>
+  </ul>
+</div>
+
 {% endblock %}
