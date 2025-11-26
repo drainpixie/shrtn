@@ -1,6 +1,6 @@
 {
 	inputs = {
-		nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+		nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
 		hooks = {
 			url = "github:cachix/git-hooks.nix";
@@ -71,9 +71,7 @@
 										inherit
 											(pkgs)
 											rustToolchain
-											cargo-deny
 											cargo-edit
-											cargo-semver-checks
 											cargo-watch
 											rust-analyzer
 											openssl
@@ -81,11 +79,10 @@
 											;
 									});
 
-							env.RUST_SRC_PATH = "${pkgs.rustToolchain}/lib/rustlib/src/rust/library";
-							env.OPENSSL_DIR = "${pkgs.openssl.dev}";
-							env.OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
-							env.OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
-							env.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+							env = {
+								RUST_SRC_PATH = "${pkgs.rustToolchain}/lib/rustlib/src/rust/library";
+								PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+							};
 						};
 				});
 
@@ -100,27 +97,40 @@
 							version = "0.1.0";
 							src = ./.;
 							cargoLock.lockFile = ./Cargo.lock;
+
+							nativeBuildInputs = [pkgs.pkg-config];
 							buildInputs = [pkgs.openssl];
-							RUSTFLAGS = "--cfg=openssl";
+
+							PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
 						};
 				});
 
 		checks =
-			forAllSystems ({system, ...}: {
+			forAllSystems ({
+					system,
+					pkgs,
+					...
+				}: {
 					pre-commit-check =
 						hooks.lib.${system}.run {
 							src = ./.;
+							package = pkgs.prek;
+
 							hooks = {
 								convco.enable = true;
 								alejandra.enable = true;
+								prettier.enable = true;
+
 								clippy = {
 									enable = true;
 									package = fenix.packages.${system}.stable.clippy;
 								};
+
 								rustfmt = {
 									enable = true;
 									package = fenix.packages.${system}.default.rustfmt;
 								};
+
 								statix = {
 									enable = true;
 									settings.ignore = ["/.direnv"];
