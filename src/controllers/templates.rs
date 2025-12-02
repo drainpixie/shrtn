@@ -1,7 +1,7 @@
 use actix_web::{HttpResponse, get, web};
 use askama::Template;
 
-use crate::{services::urls::UrlService, utils::APIResult};
+use crate::{database::Url, services::urls::UrlService, utils::APIResult};
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -15,6 +15,10 @@ struct NotFoundTemplate;
 #[template(path = "info.html")]
 struct InfoTemplate;
 
+#[derive(Template)]
+#[template(path = "ctrl.html")]
+struct ControlTemplate;
+
 fn render_template<T: Template>(template: &T) -> APIResult {
 	let html = template.render()?;
 	Ok(HttpResponse::Ok().content_type("text/html").body(html))
@@ -25,8 +29,18 @@ pub async fn info() -> APIResult {
 	render_template(&InfoTemplate {})
 }
 
-#[get("/{slug:.*}")]
-pub async fn index(
+#[get("/ctrl")]
+pub async fn modify() -> APIResult {
+	render_template(&ControlTemplate {})
+}
+
+#[get("/")]
+pub async fn home() -> APIResult {
+	render_template(&IndexTemplate {})
+}
+
+#[get("/{slug}")]
+pub async fn redirect(
 	slug: web::Path<String>,
 	service: web::Data<UrlService>,
 ) -> APIResult {
@@ -48,5 +62,5 @@ pub async fn index(
 }
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
-	cfg.service(info).service(index);
+	cfg.service(home).service(info).service(modify).service(redirect);
 }

@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block title %}shrtn::ctrl{% endblock %} {% block
+head %}
+<style></style>
+// TODO: !
+<script></script>
+{% endblock %} {% block body %}
+<p>manage a specific shortened URL.</p>
+
+<section id="inputs">
+  <input id="slug" type="text" placeholder="slug" required />
+  <button type="button" id="fetch">fetch</button>
+</section>
+
+<div id="output"><p>nothing has been fetched yet.</p></div>
+
+<div id="result" style="display: none; margin-top: 1rem">
+  <p><em>short:</em> <code id="short"></code></p>
+  <p><em>target:</em> <code id="target"></code></p>
+  <p><em>clicks:</em> <code id="clicks"></code></p>
+
+  <section id="inputs" style="margin-top: 1rem">
+    <input id="token" type="text" placeholder="authentication token" required />
+    <button type="button" id="delete">delete url</button>
+  </section>
+</div>
+{% endblock %}

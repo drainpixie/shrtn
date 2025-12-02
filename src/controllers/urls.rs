@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_web::{HttpResponse, delete, get, post, web};
 use log::{error, info};
 use serde::Deserialize;
@@ -14,8 +16,25 @@ pub struct AddRequest {
 	pub target: String,
 }
 
+#[get("{slug}")]
+pub async fn get(
+	slug: web::Path<String>,
+	service: web::Data<UrlService>,
+) -> APIResult {
+	let slug = slug.into_inner();
+	let url = service.get(&slug).await.map_err(|_| APIError::NotFound)?;
+
+	Ok(HttpResponse::Ok().json(APIResponse {
+		success: true,
+		data: Some(url),
+		message: None,
+	}))
+}
+
 #[get("")]
 pub async fn list(service: web::Data<UrlService>) -> APIResult {
+	// TODO: guard this with an 'admin' token or similar
+
 	let urls = service.list().await.map_err(|e| {
 		error!("failed to fetch urls {:?}", e);
 		APIError::DatabaseError("failed to fetch urls".to_string())
@@ -73,10 +92,10 @@ pub async fn add(
 pub async fn delete(
 	service: web::Data<UrlService>,
 	slug: web::Path<String>,
-	token: web::Query<std::collections::HashMap<String, String>>,
+	query: web::Query<HashMap<String, String>>,
 ) -> APIResult {
 	let slug = slug.into_inner();
-	let token = match token.get("token") {
+	let token = match query.get("token") {
 		Some(t) => t,
 		None => return Err(APIError::Unauthorized),
 	};
@@ -99,6 +118,10 @@ pub async fn delete(
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
 	cfg.service(
-		web::scope("/api/urls").service(delete).service(list).service(add),
+		web::scope("/api/urls")
+			.service(delete)
+			.service(list)
+			.service(add)
+			.service(get),
 	);
 }
